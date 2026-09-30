@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoevaluación Subcompetencia 1 - FPT I</title>
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --secondary: #f39c12;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+            --success: #27ae60;
+            --error: #c0392b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question-block:last-child {
+            border-bottom: none;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+        }
+
+        .options label {
+            display: block;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .options label:hover {
+            background: #e9ecef;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .options input[type="radio"]:checked + span {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-download {
+            background: var(--success);
+            margin-top: 15px;
+        }
+
+        .btn-download:hover {
+            background: #219a52;
+        }
+
+        #results {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) var(--score-deg), #ecf0f1 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .score-text {
+            position: relative;
+            z-index: 1;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        #certificateCanvas {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .feedback {
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .correct { background: #d4edda; color: #155724; display: block; }
+        .incorrect { background: #f8d7da; color: #721c24; display: block; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.4rem; }
+            .card { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Autoevaluación: Subcompetencia 1</h1>
+        <p>Trabajo y Empleo | Formación para el Trabajo I</p>
+    </header>
+
+    <form id="quizForm">
+        <div class="card">
+            <div class="input-group">
+                <label for="studentName">Nombre del Estudiante:</label>
+                <input type="text" id="studentName" placeholder="Ingresa tu nombre completo" required>
+            </div>
+        </div>
+
+        <div class="card" id="questionsContainer">
+            <!-- Questions will be injected here by JS -->
+        </div>
+
+        <button type="button" class="btn" onclick="evaluateQuiz()">Evaluar y Generar Certificado</button>
+    </form>
+
+    <div id="results" class="card">
+        <h2>¡Evaluación Completada!</h2>
+        <div class="score-circle" id="scoreCircle">
+            <span class="score-text" id="scoreText">0/10</span>
+        </div>
+        <p id="resultMessage"></p>
+        
+        <h3 style="margin-top: 30px; color: var(--primary);">Tu Certificado</h3>
+        <p style="font-size: 0.9rem; color: #666;">Haz clic derecho en la imagen para guardar o usa el botón de descarga.</p>
+        <canvas id="certificateCanvas" width="800" height="600"></canvas>
+        <br>
+        <button class="btn btn-download" onclick="downloadCertificate()">📥 Descargar Certificado (Imagen)</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            q: "1. Según el material de estudio, ¿cuál es la principal diferencia conceptual entre 'Trabajo' y 'Empleo'?",
+            options: [
+                "El trabajo siempre es remunerado, mientras que el empleo es voluntario.",
+                "El empleo implica recibir un salario o compensación por las actividades laborales, mientras que el trabajo es el esfuerzo humano general para producir bienes o servicios.",
+                "El trabajo solo aplica a la industria y el empleo a los servicios.",
+                "No existe diferencia, son sinónimos exactos en la economía."
+            ],
+            correct: 1
+        },
+        {
+            q: "2. ¿Cuál es el orden correcto de las etapas del proceso económico?",
+            options: [
+                "Consumo, Distribución, Producción.",
+                "Distribución, Producción, Consumo.",
+                "Producción, Distribución, Consumo.",
+                "Producción, Consumo, Distribución."
+            ],
+            correct: 2
+        },
+        {
+            q: "3. De acuerdo con Adam Smith, ¿cuál es una de las principales ventajas de la división del trabajo?",
+            options: [
+                "Aumenta la monotonía y la frustración del trabajador.",
+                "Incrementa la productividad, la calidad y permite el ahorro de capital.",
+                "Elimina la necesidad de que los trabajadores se especialicen.",
+                "Genera una dependencia total del empleador hacia el empleado."
+            ],
+            correct: 1
+        },
+        {
+            q: "4. ¿Qué sector económico se encarga de la extracción y recolección de recursos naturales (ej. agricultura, minería, pesca)?",
+            options: [
+                "Sector Primario",
+                "Sector Secundario",
+                "Sector Terciario",
+                "Sector Cuaternario"
+            ],
+            correct: 0
+        },
+        {
+            q: "5. Si una empresa se dedica a la investigación, desarrollo tecnológico, consultoría y servicios de información avanzada, ¿a qué sector pertenece?",
+            options: [
+                "Sector Primario",
+                "Sector Secundario",
+                "Sector Terciario",
+                "Sector Cuaternario"
+            ],
+            correct: 3
+        },
+        {
+            q: "6. La actividad que pone los bienes y servicios producidos al alcance de los consumidores finales se denomina:",
+            options: [
+                "Producción",
+                "Consumo",
+                "Distribución",
+                "Inversión"
+            ],
+            correct: 2
+        },
+        {
+            q: "7. ¿Qué crítica hace Karl Marx a la especialización extrema en el trabajo (división del trabajo)?",
+            options: [
+                "Que genera un exceso de creatividad en los obreros.",
+                "Que el trabajador necesita cada vez menos conocimiento, derivando en una menor cualificación y frustración por la monotonía.",
+                "Que aumenta excesivamente los costos de formación para la empresa.",
+                "Que impide la mecanización de los procesos productivos."
+            ],
+            correct: 1
+        },
+        {
+            q: "8. ¿Cuál de los siguientes ejemplos representa un 'Empleo' y no solo un 'Trabajo'?",
+            options: [
+                "Ayudar a un vecino a pintar su casa sin cobrar nada.",
+                "Cultivar un huerto familiar exclusivamente para autoconsumo.",
+                "Ser profesor en una Secundaria Técnica y recibir un salario mensual.",
+                "Realizar tareas domésticas en tu propia habitación."
+            ],
+            correct: 2
+        },
+        {
+            q: "9. El sector que transforma las materias primas en productos elaborados o semielaborados (industria, manufactura, construcción) es el:",
+            options: [
+                "Sector Primario",
+                "Sector Secundario",
+                "Sector Terciario",
+                "Sector Quinario"
+            ],
+            correct: 1
+        },
+        {
+            q: "10. En los componentes del trabajo, ¿cómo se le denomina a los 'bienes y recursos utilizados en el proceso productivo para producir otros bienes' (ej. maquinaria, herramientas)?",
+            options: [
+                "Recursos naturales",
+                "Fuerza de trabajo",
+                "Capital",
+                "Tecnología"
+            ],
+            correct: 2
+        }
+    ];
+
+    const container = document.getElementById('questionsContainer');
+    
+    // Render questions
+    questions.forEach((q, index) => {
+        let html = `<div class="question-block">
+            <div class="question-text">${q.q}</div>
+            <div class="options">`;
+        
+        q.options.forEach((opt, optIndex) => {
+            html += `
+                <label>
+                    <input type="radio" name="q${index}" value="${optIndex}" required>
+                    <span>${opt}</span>
+                </label>`;
+        });
+        
+        html += `</div>
+            <div class="feedback" id="feedback${index}"></div>
+        </div>`;
+        container.innerHTML += html;
+    });
+
+    function evaluateQuiz() {
+        const name = document.getElementById('studentName').value.trim();
+        if (!name) {
+            alert("Por favor, ingresa tu nombre para continuar.");
+            return;
+        }
+
+        let score = 0;
+        let allAnswered = true;
+
+        questions.forEach((q, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const feedbackEl = document.getElementById(`feedback${index}`);
+            
+            if (!selected) {
+                allAnswered = false;
+                return;
+            }
+
+            const userAnswer = parseInt(selected.value);
+            if (userAnswer === q.correct) {
+                score++;
+                feedbackEl.className = 'feedback correct';
+                feedbackEl.innerText = "✅ ¡Correcto!";
+            } else {
+                feedbackEl.className = 'feedback incorrect';
+                feedbackEl.innerText = `❌ Incorrecto. La respuesta correcta es: ${q.options[q.correct]}`;
+            }
+        });
+
+        if (!allAnswered) {
+            alert("Por favor, responde todas las preguntas antes de evaluar.");
+            return;
+        }
+
+        // Show results
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('scoreText').innerText = `${score}/10`;
+        
+        const percentage = (score / 10) * 100;
+        const deg = (percentage / 100) * 360;
+        document.getElementById('scoreCircle').style.setProperty('--score-deg', `${deg}deg`);
+
+        let message = "";
+        if (percentage === 100) message = "¡Excelente! Dominas completamente los conceptos de la Subcompetencia 1.";
+        else if (percentage >= 80) message = "¡Muy bien! Tienes un gran dominio del tema, revisa los pequeños detalles.";
+        else if (percentage >= 60) message = "Buen trabajo. Te sugerimos repasar los conceptos de sectores económicos y división del trabajo.";
+        else message = "Es necesario repasar el material de la Subcompetencia 1. ¡No te rindas, vuelve a intentarlo!";
+        
+        document.getElementById('resultMessage').innerText = message;
+
+        generateCertificate(name, score);
+        
+        // Scroll to results
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function generateCertificate(name, score) {
+        const canvas = document.getElementById('certificateCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Background
+        ctx.fillStyle = '#fdfbf7';
+        ctx.fillRect(0, 0, width, height);
+
+        // Borders
+        ctx.strokeStyle = '#1a5f7a';
+        ctx.lineWidth = 12;
+        ctx.strokeRect(20, 20, width - 40, height - 40);
+        
+        ctx.strokeStyle = '#f39c12';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(35, 35, width - 70, height - 70);
+
+        // Corner decorations (simple lines)
+        ctx.strokeStyle = '#1a5f7a';
+        ctx.lineWidth = 2;
+        const corners = [[45, 45], [width-45, 45], [45, height-45], [width-45, height-45]];
+        corners.forEach(([x, y]) => {
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#f39c12';
+            ctx.fill();
+        });
+
+        // Text
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#1a5f7a';
+        
+        ctx.font = 'bold 36px serif';
+        ctx.fillText('CERTIFICADO DE AUTOEVALUACIÓN', width / 2, 100);
+
+        ctx.font = '20px sans-serif';
+        ctx.fillStyle = '#2d3436';
+        ctx.fillText('Se otorga el presente reconocimiento a:', width / 2, 170);
+
+        ctx.font = 'bold 42px cursive';
+        ctx.fillStyle = '#f39c12';
+        ctx.fillText(name, width / 2, 240);
+
+        ctx.font = '22px sans-serif';
+        ctx.fillStyle = '#2d3436';
+        ctx.fillText('Por completar exitosamente la Autoevaluación de la', width / 2, 310);
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillStyle = '#1a5f7a';
+        ctx.fillText('Subcompetencia 1: Trabajo y Empleo', width / 2, 345);
+
+        ctx.font = '20px sans-serif';
+        ctx.fillStyle = '#2d3436';
+        ctx.fillText('Temas: Conceptos de Trabajo y Empleo, Proceso Económico,', width / 2, 400);
+        ctx.fillText('División del Trabajo y Sectores Económicos.', width / 2, 430);
+
+        // Score Badge
+        ctx.beginPath();
+        ctx.arc(width / 2, 500, 40, 0, Math.PI * 2);
+        ctx.fillStyle = score === 10 ? '#27ae60' : (score >= 6 ? '#f39c12' : '#c0392b');
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 28px sans-serif';
+        ctx.fillText(`${score}/10`, width / 2, 510);
+
+        // Footer
+        ctx.fillStyle = '#7f8c8d';
+        ctx.font = 'italic 16px sans-serif';
+        ctx.fillText('FORMACIÓN PARA EL TRABAJO I | Semestre I Agosto - Diciembre 2026', width / 2, 565);
+    }
+
+    function downloadCertificate() {
+        const canvas = document.getElementById('certificateCanvas');
+        const link = document.createElement('a');
+        const name = document.getElementById('studentName').value.trim().replace(/\s+/g, '_');
+        link.download = `Certificado_FPT1_${name}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+</script>
+
+</body>
+</html>
